@@ -21,7 +21,7 @@
                         @endif
                        </div>
                        <div class="form-group">
-                           <button type="submit" class="btn btn-outline-info">Simpan Data</button>
+                           <button type="submit" class="btn btn-success">Simpan Data</button>
                        </div>
                    </form>
                 </div>

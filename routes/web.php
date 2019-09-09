@@ -18,4 +18,19 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('/kategori', 'KategoriController');
+Route::get('add-to-log', 'HomeController@myTestAddToLog');
+
+// Route::group(['prefix'=>'admin','middleware'=>['auth','role:admin']],function (){
+//     Route::get('/', function(){
+//         return view('admin.index');
+//     });
+// });
+
+Route::group(['prefix'=>'admin','middleware'=>'auth'],
+function (){
+    Route::get('/', function(){
+        return view('backend.index');
+    });
+    Route::resource('kategori', 'KategoriController');
+    Route::resource('logActivity', 'LogActivityController');
+});

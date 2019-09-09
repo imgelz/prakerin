@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Kategori;
 use Illuminate\Http\Request;
 use Session;
+use DataTables;
 
 class KategoriController extends Controller
 {
@@ -13,10 +14,21 @@ class KategoriController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kategori = Kategori::orderBy('created_at','desc')->get();
-        return view('backend.kategori.index',compact('kategori'));
+        if ($request->ajax()) {
+            $data = Kategori::latest()->get();
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('aksi', function($row){
+                           $btn = '<a href="/admin/kategori/" class="btn btn-primary fa fa-edit"></a>';
+                           $btn = $btn.' <button type="submit" class="hapus-kategori-per-id btn btn-danger btn-sm" data-toggle="modal" data-target="#modal-hapus-kategori" data-id="'.$row->id.'" data-nama="'.$row->nama_kategori.'" data-slug="'.$row->slug.'"><i class="fa fa-trash-o"></i></button>';
+                            return $btn;
+                    })
+                    ->rawColumns(['aksi'])
+                    ->make(true);
+        }
+        return view('backend.kategori.index');
     }
 
     /**
@@ -38,6 +50,8 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
+        \LogActivity::addToLog('Tambah Data Kategori');
+
         $kategori = new Kategori();
         $kategori->nama_kategori = $request->nama_kategori;
         $kategori->slug = str_slug($request->nama_kategori);
@@ -79,6 +93,7 @@ class KategoriController extends Controller
      */
     public function update(Request $request, $id)
     {
+        \LogActivity::addToLog('Mengubah Data Kategori');
         $kategori = Kategori::findOrFail($id);
         $kategori->nama_kategori = $request->nama_kategori;
         $kategori->slug = str_slug($request->nama_kategori, '-');
@@ -96,10 +111,11 @@ class KategoriController extends Controller
      */
     public function destroy($id)
     {
+        \LogActivity::addToLog('Menghapus Data Kategori');
         $kategori2 = Kategori::findOrFail($id);
-        if(!Kategori::destroy($id))
+        if(!Kategori::destroy($id)){
         return redirect()->back(); 
-        
+        }
         Session::flash("flash_notification", ["level"=>"danger",
                                               "message"=>"Berhasil menghapus data <b>".$kategori2->nama_kategori."</b>"]);
         return redirect()->route('kategori.index');

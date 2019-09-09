@@ -16,7 +16,7 @@
                             <input class="form-control" type="text" name="nama_kategori" value="{{ $kategori->nama_kategori }}">
                        </div>
                        <div class="form-group">
-                           <button type="submit" class="btn btn-outline-info">Edit & Simpan Data</button>
+                           <button type="submit" class="btn btn-warning">Edit & Simpan Data</button>
                        </div>
                    </form>
                 </div>
